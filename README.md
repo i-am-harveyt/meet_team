@@ -12,3 +12,8 @@
 pdm install
 pdm run dev
 ```
+
+## Tools
+
+- Formatter: `black`
+- Linter: `pylint`
