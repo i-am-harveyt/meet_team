@@ -1,20 +1,10 @@
 """This is the user handlers, for the user router"""
 
-import traceback
-
-from mysql.connector.cursor import MySQLCursor
-
 from ...db import get_db
 
 
-async def find_one(**kwargs):
-    """To find out one user"""
-
-
-async def register(account, password, name):
-    """To add a new user in
-    @returns id
-    """
+async def register(account: str, password: str, name: str) -> int:
+    """To add a new user in"""
     conn = get_db()
     cur = conn.cursor()
 
@@ -33,13 +23,13 @@ async def register(account, password, name):
     return new_user_id
 
 
-async def login(account, password):
+async def login(account: str, password: str) -> int:
     """To login"""
     conn = get_db()
     cur = conn.cursor()
 
     query = """
-    SELECT id, name FROM user
+    SELECT id FROM user
     WHERE account=%s AND password=%s
     """
     cur.execute(query, (account, password))
@@ -47,3 +37,20 @@ async def login(account, password):
     cur.close()
     conn.close()
     return ret
+
+
+async def find_info(user_id: int, is_self: bool) -> dict[str, str]:
+    """This function is to fetching user info"""
+    conn = get_db()
+    cur = conn.cursor(dictionary=True)
+    if is_self:
+        query: str = """
+        SELECT id, account, name, description
+        FROM user WHERE id=%s
+        """
+        cur.execute(query, (user_id,))
+        ret = cur.fetchone()
+        cur.close()
+        conn.close()
+        return ret
+    return {}
