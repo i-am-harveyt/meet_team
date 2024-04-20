@@ -2,23 +2,23 @@ CREATE DATABASE IF NOT EXISTS meet_team;
 
 CREATE TABLE IF NOT EXISTS user (
 	id serial PRIMARY KEY,
-	name VARCHAR(255) NOT NULL,
-	password VARCHAR(255) NOT NULL,
 	account VARCHAR(255) NOT NULL,
+	password VARCHAR(255) NOT NULL,
+	name VARCHAR(255) NOT NULL,
+	description VARCHAR(500),
 	join_at timestamp DEFAULT now(),
 	UNIQUE(account)
 );
 
--- below statements has not been already tested
-
-CREATE TABLE IF NOT EXISTS event (
+CREATE TABLE IF NOT EXISTS course (
 	id serial PRIMARY KEY,
 	name VARCHAR(255) NOT NULL,
-	launcher_id serial REFERENCES user(id),
+	owner_id int REFERENCES user(id),
 	description varchar(50) NOT NULL,
 	launch_at timestamp DEFAULT now()
 );
 
+-- below statements has not been already tested
 CREATE TABLE IF NOT EXISTS member (
 	id serial PRIMARY KEY,
 	user_id serial REFERENCES user(id) NOT NULL,
@@ -66,4 +66,3 @@ CREATE TABLE IF NOT EXISTS message (
 	content VARCHAR(255) NOT NULL,
 	create_at timestamp DEFAULT now()
 );
-
