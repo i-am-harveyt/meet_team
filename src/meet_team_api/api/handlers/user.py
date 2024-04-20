@@ -1,12 +1,12 @@
 """This is the user handlers, for the user router"""
 
-from ...db import get_db
+from ...db import get_connection, get_cursor
 
 
 async def register(account: str, password: str, name: str) -> int:
     """To add a new user in"""
-    conn = get_db()
-    cur = conn.cursor()
+    conn = get_connection()
+    cur = get_cursor(conn)
 
     query = """
     INSERT INTO user (account, password, name)
@@ -25,8 +25,8 @@ async def register(account: str, password: str, name: str) -> int:
 
 async def login(account: str, password: str) -> int:
     """To login"""
-    conn = get_db()
-    cur = conn.cursor()
+    conn = get_connection()
+    cur = get_cursor(conn)
 
     query = """
     SELECT id FROM user
@@ -41,8 +41,8 @@ async def login(account: str, password: str) -> int:
 
 async def find_info(user_id: int, is_self: bool) -> dict[str, str]:
     """This function is to fetching user info"""
-    conn = get_db()
-    cur = conn.cursor(dictionary=True)
+    conn = get_connection()
+    cur = get_cursor(conn)
     if is_self:
         query: str = """
         SELECT id, account, name, description
