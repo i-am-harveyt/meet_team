@@ -8,7 +8,7 @@ from fastapi import APIRouter, Header, HTTPException, status
 from fastapi.responses import JSONResponse
 
 from ...models.user import LoginRequest, RegisterRequest
-from ..handlers.user import find_info, login, register
+from ..handlers import user as user_handler
 
 user_router = APIRouter()
 
@@ -24,31 +24,16 @@ async def find_one(user_id: int, authorization: Annotated[str | None, Header()] 
         )
         is_self = payload["id"][0] == user_id
 
-    data = await find_info(user_id, is_self)
+    data = await user_handler.find_info(user_id, is_self)
 
     return JSONResponse({"data": data}, status_code=status.HTTP_200_OK)
 
 
-@user_router.post("/register")
-async def register_route(user: RegisterRequest):
-    """register routing"""
-    try:
-        user_id = await register(**user.dict())
-        return JSONResponse(
-            {"data": {"id": user_id}}, status_code=status.HTTP_201_CREATED
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e),
-        )
-
-
 @user_router.post("/login")
-async def login_route(login_info: LoginRequest):
+async def login(login_info: LoginRequest):
     """register routing"""
     try:
-        user_id = await login(**login_info.dict())
+        user_id = (await user_handler.login(**login_info.dict()))["id"]
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
@@ -67,3 +52,23 @@ async def login_route(login_info: LoginRequest):
     return JSONResponse(
         {"data": {"token": encoded_jwt}}, status_code=status.HTTP_200_OK
     )
+
+
+@user_router.post("/register")
+async def register(user: RegisterRequest):
+    """register routing"""
+    try:
+        user_id = await user_handler.register(**user.dict())
+        return JSONResponse(
+            {"data": {"id": user_id}}, status_code=status.HTTP_201_CREATED
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e),
+        )
+
+
+@user_router.patch("/user")
+async def update_info():
+    pass
