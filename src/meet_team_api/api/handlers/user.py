@@ -3,7 +3,7 @@
 from ...db import get_connection, get_cursor
 
 
-async def register(account: str, password: str, name: str) -> int:
+async def register(account: str, password: str, name: str) -> int | None:
     """To add a new user in"""
     conn = get_connection()
     cur = get_cursor(conn)
@@ -14,8 +14,11 @@ async def register(account: str, password: str, name: str) -> int:
     """
     new_user = {"account": account, "password": password, "name": name}
 
-    cur.execute(query, new_user)
-    conn.commit()
+    try:
+        cur.execute(query, new_user)
+        conn.commit()
+    except Exception as e:
+        raise e
 
     new_user_id = cur.lastrowid
     cur.close()
@@ -23,7 +26,7 @@ async def register(account: str, password: str, name: str) -> int:
     return new_user_id
 
 
-async def login(account: str, password: str) -> int:
+async def login(account: str, password: str) -> int | None:
     """To login"""
     conn = get_connection()
     cur = get_cursor(conn)

@@ -3,18 +3,49 @@
 from typing import Optional
 
 from ...db import get_connection, get_cursor
+from ...models.course import CourseId
 
 
-async def create_course(course_name, course_year, course_semester, owner_id) -> int:
-    """To add a new user in"""
+async def join(course_id: int, user_id: int):
+    """To add a user into the `course_user` table"""
     conn = get_connection()
     cur = get_cursor(conn)
 
     query = """
+    INSERT INTO course_member (course_id, user_id)
+    VALUES (%s, %s)
+    """
+    try:
+        cur.execute(query, (course_id, user_id))
+        conn.commit()
+    except Exception as e:
+        cur.close()
+        conn.close()
+        raise e
+    cur.close()
+    conn.close()
+    return True
+
+
+async def create_course(
+    course_name, course_year, course_semester, owner_id
+) -> CourseId:
+    """To add a new user in"""
+    conn = get_connection()
+    cur = get_cursor(conn)
+
+    course_query = """
     INSERT INTO course (name, year, semester, owner_id)
     VALUES (%s, %s, %s, %s)
     """
-    cur.execute(query, (course_name, course_year, course_semester, owner_id))
+    cur.execute(course_query, (course_name, course_year, course_semester, owner_id))
+    course_id = cur.lastrowid
+
+    member_query = """
+    INSERT INTO course_member (course_id, user_id, role)
+    VALUES (%s, %s, %s)
+    """
+    cur.execute(member_query, (course_id, owner_id, "Prof"))
     conn.commit()
 
     new_course_id = cur.lastrowid
@@ -66,9 +97,6 @@ async def update_course(
         params = (new_desc,) + params
     if isinstance(new_name, str):
         params = (new_name,) + params
-
-    print(query)
-    print(params)
 
     cur.execute(query, params)
     conn.commit()
