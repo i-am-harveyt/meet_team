@@ -7,7 +7,7 @@ import jwt
 from fastapi import APIRouter, Header, HTTPException, status
 from fastapi.responses import JSONResponse
 
-from ...models.course import CreateCourseRequest, UpdateCourseRequest
+from ...models.course import CourseId, CreateCourseRequest, UpdateCourseRequest
 from ..handlers import course
 
 course_router = APIRouter()
@@ -35,6 +35,33 @@ async def find_all(offset: int = 0, limit: int = 10):
     )
 
 
+@course_router.post("/{course_id}")
+async def join(course_id: CourseId, authorization: Annotated[str | None, Header()]):
+    """This router is for adding a user into a course"""
+    try:
+        payload = jwt.decode(
+            authorization[7:], os.getenv("MEET_TEAM_JWT"), algorithms="HS256"
+        )
+        user_id = payload["id"]
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid Bearer Token",
+        ) from e
+
+    try:
+        new_course_id = await course.join(course_id, user_id)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e),
+        ) from e
+
+    return JSONResponse(
+        {"data": {"course": {"id": new_course_id}}}, status_code=status.HTTP_200_OK
+    )
+
+
 @course_router.post("/")
 async def create(
     req: CreateCourseRequest, authorization: Annotated[str | None, Header()]
@@ -45,12 +72,12 @@ async def create(
         payload = jwt.decode(
             authorization[7:], os.getenv("MEET_TEAM_JWT"), algorithms="HS256"
         )
-        user_id = payload["id"][0]
-    except Exception:
+        user_id = payload["id"]
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Invalid Bearer Token",
-        )
+        ) from e
 
     try:
         new_course_id = await course.create_course(
@@ -60,7 +87,7 @@ async def create(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e),
-        )
+        ) from e
 
     return JSONResponse(
         {"data": {"course": {"id": new_course_id}}}, status_code=status.HTTP_201_CREATED
@@ -77,11 +104,11 @@ async def update_info(
             authorization[7:], os.getenv("MEET_TEAM_JWT"), algorithms="HS256"
         )
         user_id = payload["id"]
-    except Exception as exc:
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Invalid Bearer Token",
-        )
+        ) from e
 
     try:
         course_id = await course.update_course(
@@ -91,8 +118,8 @@ async def update_info(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e),
-        )
+        ) from e
 
     return JSONResponse(
-        {"data": {"course": {"id": req.id}}}, status_code=status.HTTP_200_OK
+        {"data": {"course": {"id": course_id}}}, status_code=status.HTTP_200_OK
     )

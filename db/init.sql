@@ -18,15 +18,16 @@ CREATE TABLE IF NOT EXISTS course (
 	launch_at timestamp DEFAULT now()
 );
 
--- below statements has not been already tested
-CREATE TABLE IF NOT EXISTS member (
+CREATE TABLE IF NOT EXISTS course_member (
 	id serial PRIMARY KEY,
-	user_id serial REFERENCES user(id) NOT NULL,
-	event_id serial REFERENCES event(id) NOT NULL,
-	role ROLE NOT NULL,
-	join_at timestamp DEFAULT now()
+	user_id int REFERENCES user(id),
+	event_id int REFERENCES event(id),
+	role ENUM('Prof', 'TA', 'Stu') DEFAULT 'Stu',
+	join_at timestamp DEFAULT now(),
+	UNIQUE(user_id, event_id)
 );
 
+-- below statements has not been already tested
 CREATE TABLE IF NOT EXISTS annoucement (
 	id serial PRIMARY KEY,
 	status PUBLISH_STATUS DEFAULT 'draft',
