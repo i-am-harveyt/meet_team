@@ -76,8 +76,8 @@ async def find_course(course_id: int) -> Optional[dict[str, int | str]]:
 
 
 async def update_course(
-    owner_id: int, course_id: int, new_name: str, new_desc: str
-) -> Optional[int]:
+    user_id: int, course_id: int, new_name: str | None, new_desc: str | None
+) -> int:
     """This function update the info of course"""
     conn = get_connection()
     cur = get_cursor(conn)
@@ -92,7 +92,7 @@ async def update_course(
     {"description = %s" if has_desc else ""}
     WHERE id=%s AND owner_id=%s
     """
-    params = (course_id, owner_id)
+    params = (course_id, user_id)
     if isinstance(new_desc, str):
         params = (new_desc,) + params
     if isinstance(new_name, str):
@@ -104,4 +104,4 @@ async def update_course(
     cur.close()
     conn.close()
 
-    return id
+    return course_id

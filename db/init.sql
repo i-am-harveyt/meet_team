@@ -6,64 +6,64 @@ CREATE TABLE IF NOT EXISTS user (
 	password VARCHAR(255) NOT NULL,
 	name VARCHAR(255) NOT NULL,
 	description VARCHAR(500),
-	join_at timestamp DEFAULT now(),
+	join_at TIMESTAMP DEFAULT NOW(),
 	UNIQUE(account)
 );
 
 CREATE TABLE IF NOT EXISTS course (
-	id serial PRIMARY KEY,
+	id SERIAL PRIMARY KEY,
 	name VARCHAR(255) NOT NULL,
-	owner_id int REFERENCES user(id),
-	description varchar(50) NOT NULL,
-	launch_at timestamp DEFAULT now()
+	owner_id INT REFERENCES user(id),
+	year INT NOT NULL,
+	semester ENUM('1', '2') NOT NULL,
+	description VARCHAR(50),
+	launch_at TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS course_member (
-	id serial PRIMARY KEY,
-	user_id int REFERENCES user(id),
-	event_id int REFERENCES event(id),
+	id SERIAL PRIMARY KEY,
+	user_id INT REFERENCES user(id),
+	course_id INT REFERENCES event(id),
 	role ENUM('Prof', 'TA', 'Stu') DEFAULT 'Stu',
-	join_at timestamp DEFAULT now(),
-	UNIQUE(user_id, event_id)
+	join_at TIMESTAMP DEFAULT now(),
+	UNIQUE(user_id, course_id)
 );
 
--- below statements has not been already tested
-CREATE TABLE IF NOT EXISTS annoucement (
-	id serial PRIMARY KEY,
-	status PUBLISH_STATUS DEFAULT 'draft',
-	member_id serial REFERENCES member(id),
-	topic varchar(50),
-	content VARCHAR(255)
+CREATE TABLE IF NOT EXISTS `group` (
+	id SERIAL PRIMARY KEY,
+	course_id INT REFERENCES course(id),
+	owner_id INT REFERENCES user(id),
+	name VARCHAR(50) NOT NULL,
+	description VARCHAR(500),
+	create_at TIMESTAMP DEFAULT NOW(),
+	UNIQUE(course_id, name)
+);
+
+CREATE TABLE IF NOT EXISTS group_member (
+	id SERIAL PRIMARY KEY,
+	user_id INT REFERENCES user(id),
+	group_id INT REFERENCES `group`(id),
+	join_at TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS task (
-	id serial PRIMARY KEY,
-	event_id serial REFERENCES event(id),
-	creator_id serial REFERENCES user(id),
-	name varchar(30) NOT NULL,
-	description VARCHAR(255),
-	create_at timestamp DEFAULT now()
-);
+	id SERIAL PRIMARY KEY,
+	name TEXT,
+	group_id INT REFERENCES `group`(id),
+	creator_id INT REFERENCES user(id),
+	assignee_id INT REFERENCES user(id),
+	reviewer_id INT REFERENCES user(id),
+	description TEXT,
+	create_at TIMESTAMP DEFAULT NOW(),
+	close_at TIMESTAMP DEFAULT NULL,
+	status ENUM('Todo', 'Doing', 'Done') DEFAULT 'Todo'
 
-CREATE TABLE IF NOT EXISTS reviewer (
-	id serial PRIMARY KEY,
-	task_id serial REFERENCES task(id),
-	user_id seiral REFERENCES user(id),
-    assigned_at timestamp DEFAULT now()
 );
 
 CREATE TABLE IF NOT EXISTS commit (
-	id serial PRIMARY KEY,
-	task_id serial REFERENCES task(id),
-	user_id serial REFERENCES user(id),
-	message VARCHAR(50) NOT NULL,
-	create_at timestamp DEFAULT now()
-);
-
-CREATE TABLE IF NOT EXISTS message (
-	id serial PRIMARY KEY,
-	task_id serial REFERENCES event(id),
-	sender_id serial REFERENCES user(id),
-	content VARCHAR(255) NOT NULL,
-	create_at timestamp DEFAULT now()
+	id SERIAL PRIMARY KEY,
+	task_id INT REFERENCES task(id),
+	creator_id INT REFERENCES user(id),
+	description TEXT,
+	reference_link TEXT
 );

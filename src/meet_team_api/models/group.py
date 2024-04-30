@@ -1,26 +1,23 @@
 """This is the module stores all model-related models"""
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from .course import CourseId
-from .user import UserId
 
 GroupId = int
 
 
-class GroupBaseModel(BaseModel):
-    """This is the base model"""
+class GroupCreateRequest(BaseModel):
+    """This Model represent the attributes in the request"""
+
+    course_id: CourseId
+    name: str
+    description: str | None = Field(default=None)
+
+
+class GroupUpdateRequest(BaseModel):
+    """The request used for the update of the group"""
 
     id: GroupId
-    course_id: CourseId
-
-
-class GroupInfo(GroupBaseModel):
-    """This is the contains group info"""
-
-    group_name: str
-    members_id: list[UserId]
-
-
-class GroupJoinRequest(GroupBaseModel):
-    """docstring"""
+    name: str
+    description: str | None = Field(default=None)
