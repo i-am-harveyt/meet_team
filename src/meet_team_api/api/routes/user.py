@@ -22,7 +22,7 @@ async def find_one(user_id: int, authorization: Annotated[str | None, Header()] 
         payload = jwt.decode(
             authorization[7:], os.getenv("MEET_TEAM_JWT"), algorithms="HS256"
         )
-        is_self = payload["id"][0] == user_id
+        is_self = payload["id"] == user_id
 
     data = await user_handler.find_info(user_id, is_self)
 

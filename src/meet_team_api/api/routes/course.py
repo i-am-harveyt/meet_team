@@ -39,6 +39,7 @@ async def find_all(offset: int = 0, limit: int = 10):
 async def join(course_id: CourseId, authorization: Annotated[str | None, Header()]):
     """This router is for adding a user into a course"""
     try:
+        assert isinstance(authorization, str)
         payload = jwt.decode(
             authorization[7:], os.getenv("MEET_TEAM_JWT"), algorithms="HS256"
         )
@@ -69,6 +70,7 @@ async def create(
     """This route is to create a course"""
 
     try:
+        assert isinstance(authorization, str)
         payload = jwt.decode(
             authorization[7:], os.getenv("MEET_TEAM_JWT"), algorithms="HS256"
         )
@@ -100,6 +102,7 @@ async def update_info(
 ):
     """This route provide update function toward course"""
     try:
+        assert isinstance(authorization, str)
         payload = jwt.decode(
             authorization[7:], os.getenv("MEET_TEAM_JWT"), algorithms="HS256"
         )
@@ -121,5 +124,5 @@ async def update_info(
         ) from e
 
     return JSONResponse(
-        {"data": {"course": {"id": course_id}}}, status_code=status.HTTP_200_OK
+        content={"data": {"course": {"id": course_id}}}, status_code=status.HTTP_200_OK
     )
