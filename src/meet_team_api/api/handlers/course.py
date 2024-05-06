@@ -60,10 +60,10 @@ async def find_course(course_id: int) -> Optional[dict[str, int | str]]:
     cur = get_cursor(conn)
     cur.execute(
         """
-    SELECT id, name, year, semester, description
-    FROM course
-    WHERE id = %s
-    """,
+        SELECT id, name, year, semester, description
+        FROM course
+        WHERE id = %s
+        """,
         (course_id,),
     )
 
