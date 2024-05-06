@@ -4,14 +4,15 @@ services:
     restart: always
     ports:
       - 3306:3306
-    # command: --init-file ./db/init.sql
     environment:
       MYSQL_USER: meet_team
       MYSQL_PASSWORD: meet_team
       MYSQL_DATABASE: meet_team
       MYSQL_ROOT_PASSWORD: root
     volumes:
-      - meet_team_db:/data/mysql
+      - ./db:/docker-entrypoint-initdb.d
+      - meet_team_mysql:/var/lib/mysql
 volumes:
-  meet_team_db:
-  # link from localhost: mysql -h 127.0.0.1 -P 3306 -u meet_team -p
+  meet_team_mysql:
+
+# link from localhost: mysql -h 127.0.0.1 -P 3306 -u meet_team -p

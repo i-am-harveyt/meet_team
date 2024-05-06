@@ -9,7 +9,7 @@ from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 
 from ...models.group import GroupCreateRequest, GroupUpdateRequest
-from ..handlers import group
+from ..handlers import group as group_handler
 
 group_router = APIRouter()
 
@@ -32,7 +32,7 @@ async def create(
         ) from e
 
     try:
-        new_group_id = await group.create(
+        new_group_id = await group_handler.create(
             req.course_id, user_id, req.name, req.description
         )
     except Exception as e:
@@ -50,8 +50,8 @@ async def create(
     )
 
 
-@group_router.get("/{group_id}")
-async def info(group_id: int, authorization: Annotated[str | None, Header()]):
+@group_router.get("/")
+async def info(group: int, authorization: Annotated[str | None, Header()]):
     """This funtion is to get group info"""
     try:
         assert isinstance(authorization, str)
@@ -66,7 +66,7 @@ async def info(group_id: int, authorization: Annotated[str | None, Header()]):
         ) from e
 
     try:
-        data = await group.find_one(group_id)
+        data = await group_handler.find_one(group)
     except Exception as e:
         raise HTTPException(
             detail=str(e), status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -92,7 +92,7 @@ async def update(
         ) from e
 
     try:
-        group_id = await group.update(user_id, req.id, req.name, req.description)
+        group_id = await group_handler.update(user_id, req.id, req.name, req.description)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
