@@ -1,0 +1,419 @@
+.container {
+  position: relative;
+  width: 100%;
+  background-color: #fff;
+  display: flex;
+  padding-bottom: 80px;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media (max-width: 991px) {
+  .container {
+    flex-wrap: wrap;
+  }
+}
+.header {
+  position: fixed;
+  margin-bottom: 20px;
+  background-color: #4176a6;
+  display: flex;
+  width: 100%;
+  align-items: start;
+  gap: 20px;
+  padding: 6px 80px 12px 32px;
+}
+
+@media (max-width: 991px) {
+  .header {
+    max-width: 100%;
+    flex-wrap: wrap;
+    padding: 0 20px;
+  }
+}
+
+.banner {
+  aspect-ratio: 2.78;
+  object-fit: auto;
+  object-position: center;
+  margin-left: 40px;
+  width: 271px;
+  max-width: 100%;
+}
+
+.styled-text {
+  font-size: 24px;
+  color: white;
+  margin-left: auto;
+  display: inline-block;
+  right: 0;
+  margin-right: 50px;
+  margin-top: 35px;
+}
+
+.styled-text:hover {
+  color: blue;
+}
+
+.styled-text:visited {
+  color: purple;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+.sidebar-container {
+  position: relative;
+}
+.sidebar {
+  height: 100vh;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  transition: width 0.5s;
+  padding-top: 60px;
+  color: white;
+}
+.sidebar a {
+  margin-top: 20px;
+  padding: 10px 15px;
+  text-decoration: none;
+  font-size: 20px;
+  color: #818181;
+  display: block;
+}
+.sidebar a:first-child {
+  margin-top: 30px;
+}
+.sidebar a:hover {
+  color: #f1f1f1;
+}
+.hamburger {
+  font-size: 50px;
+  cursor: pointer;
+  position: fixed;
+  top: 20px;
+  left: 15px;
+  z-index: 2;
+}
+.sidebar-container:hover .sidebar {
+  width: 250px;
+}
+.content {
+  margin-top: 200px;
+  margin-left: 400px;
+  align-self: center;
+  display: flex;
+  width: 602px;
+  max-width: 100%;
+  flex-direction: column;
+  gap: 20px;
+  font-size: 24px;
+  padding: 0 20px;
+}
+
+@media (max-width: 991px) {
+  .content {
+    flex-wrap: wrap;
+  }
+}
+
+.account-label {
+  color: #000;
+  font-family: Inter, sans-serif;
+  font-weight: 700;
+}
+
+@media (max-width: 991px) {
+  .account-label {
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+}
+
+.account-value {
+  font-family: Inter, sans-serif;
+  border-radius: 10px;
+  background-color: #f5f6f8;
+  margin-top: 27px;
+  align-items: start;
+  color: #6d6d6d;
+  font-weight: 400;
+  white-space: nowrap;
+  justify-content: center;
+  padding: 24px 22px;
+}
+
+@media (max-width: 991px) {
+  .account-value {
+    max-width: 100%;
+    flex-wrap: wrap;
+    white-space: initial;
+    padding: 0 20px;
+  }
+}
+
+.password-label {
+  color: #000;
+  font-family: Inter, sans-serif;
+  font-weight: 700;
+  margin-top: 26px;
+}
+
+@media (max-width: 991px) {
+  .password-label {
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+}
+
+.password-input {
+  border-radius: 10px; /* Rounded corners for the container */
+  background-color: #f5f6f8; /* Background color for the entire input area */
+  display: flex; /* Use flexbox for layout */
+  align-items: center; /* Center items vertically */
+  border: 1px solid #dcdcdc; /* Border for the container */
+  margin-top: 27px; /* Margin from the top */
+}
+
+.password-input {
+  border-radius: 10px; /* Rounded corners for the container */
+  background-color: #f5f6f8; /* Light grey background color for the entire input area */
+  display: flex; /* Use flexbox for layout */
+  align-items: center; /* Center items vertically */
+  border: 2px solid black; /* Black border for the container */
+  margin-top: 27px; /* Margin from the top */
+}
+
+.password-input input[type="password"] {
+  flex-grow: 1; /* Allow input to grow and fill available space */
+  border: none; /* No border for the input field */
+  outline: none; /* No outline when the field is active/focused */
+  background-color: transparent; /* Transparent background to show the container's color */
+  padding: 10px; /* Padding inside the input field */
+  font-size: 16px; /* Font size for the input text */
+  border-radius: 10px 0 0 10px; /* Rounded corners on the left side of the input field */
+}
+
+.password-input .show-password {
+  cursor: pointer; /* Change the mouse pointer to indicate it's clickable */
+  padding: 10px 15px; /* Padding inside the show password button */
+  background-color: #f5f6f8; /* Match the background color of the container */
+  /* No border-left here as we want to remove the dividing line */
+  border-radius: 0 10px 10px 0; /* Rounded corners on the right side of the button */
+  font-size: 16px; /* Font size for the button text */
+}
+
+@media (max-width: 991px) {
+  .password-input {
+    flex-wrap: wrap; /* Allow elements to wrap onto next line */
+  }
+
+  .password-input input[type="password"],
+  .password-input .show-password {
+    flex-basis: 100%; /* Make input and button take full width on smaller screens */
+    border-radius: 10px; /* Rounded corners for both elements */
+  }
+}
+/* 添加 :focus 狀態的樣式 */
+.account-value:focus,
+.password-input:focus-within,
+.confirm-password-input:focus-within {
+  border-color: #68a2d6 !important;
+}
+
+.password-hint {
+  color: #6d6d6d;
+  font-family: Inter, sans-serif;
+  font-weight: 400;
+  flex-grow: 1;
+  flex-basis: auto;
+}
+
+.show-password {
+  color: #4176a6;
+  font-family: Inter, sans-serif;
+  font-weight: 700;
+}
+
+.show-password:hover {
+  text-decoration: underline;
+}
+
+.confirm-password-label {
+  color: #000;
+  font-family: Inter, sans-serif;
+  font-weight: 700;
+  margin-top: 26px;
+}
+
+@media (max-width: 991px) {
+  .confirm-password-label {
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+}
+
+.confirm-password-input {
+  border-radius: 10px; /* Rounded corners for the container */
+  background-color: #f5f6f8; /* Background color for the entire input area */
+  display: flex; /* Use flexbox for layout */
+  align-items: center; /* Center items vertically */
+  border: 1px solid #dcdcdc; /* Border for the container */
+  margin-top: 27px; /* Margin from the top */
+}
+
+.confirm-password-input {
+  border-radius: 10px; /* Rounded corners for the container */
+  background-color: #f5f6f8; /* Light grey background color for the entire input area */
+  display: flex; /* Use flexbox for layout */
+  align-items: center; /* Center items vertically */
+  border: 2px solid black; /* Black border for the container */
+  margin-top: 27px; /* Margin from the top */
+}
+
+.confirm-password-input input[type="password"] {
+  flex-grow: 1; /* Allow input to grow and fill available space */
+  border: none; /* No border for the input field */
+  outline: none; /* No outline when the field is active/focused */
+  background-color: transparent; /* Transparent background to show the container's color */
+  padding: 10px; /* Padding inside the input field */
+  font-size: 16px; /* Font size for the input text */
+  border-radius: 10px 0 0 10px; /* Rounded corners on the left side of the input field */
+}
+
+.confirm-password-input .show-confirm-password {
+  cursor: pointer; /* Change the mouse pointer to indicate it's clickable */
+  padding: 10px 15px; /* Padding inside the show password button */
+  background-color: #f5f6f8; /* Match the background color of the container */
+  /* No border-left here as we want to remove the dividing line */
+  border-radius: 0 10px 10px 0; /* Rounded corners on the right side of the button */
+  font-size: 16px; /* Font size for the button text */
+}
+
+@media (max-width: 991px) {
+  .confirm-password-input {
+    flex-wrap: wrap; /* Allow elements to wrap onto next line */
+  }
+
+  .confirm-password-input input[type="password"],
+  .confirm-password-input .show-confirm-password {
+    flex-basis: 100%; /* Make input and button take full width on smaller screens */
+    border-radius: 10px; /* Rounded corners for both elements */
+  }
+}
+
+.confirm-password-hint {
+  color: #6d6d6d;
+  font-family: Inter, sans-serif;
+  font-weight: 400;
+  flex-grow: 1;
+  flex-basis: auto;
+}
+
+.show-confirm-password {
+  color: #4176a6;
+  font-family: Inter, sans-serif;
+  font-weight: 700;
+}
+
+.show-confirm-password:hover {
+  text-decoration: underline;
+}
+
+.register-button {
+  font-size: 30px;
+  text-align: center;
+  line-height: 1.5;
+  font-family: Inter, sans-serif;
+  border-radius: 10px;
+  border: none;
+  background-color: #68a2d6;
+  margin-top: 52px;
+  align-items: center;
+  color: #fff;
+  font-weight: 700;
+  white-space: nowrap;
+  justify-content: center;
+  padding: 20px 60px 25px;
+}
+
+.register-button:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sidebar {
+    padding-top: 15px;
+  }
+
+  .sidebar a {
+    font-size: 18px;
+    padding: 10px 15px;
+  }
+}
+
+@media (max-width: 991px) {
+  .register-button {
+    max-width: 100%;
+    flex-wrap: wrap;
+    margin-top: 40px;
+    white-space: initial;
+    padding: 0 20px;
+  }
+}
+
+.terms-text {
+  color: #4176a6;
+  font-family: Inter, sans-serif;
+  font-weight: 400;
+  align-self: center;
+}
+
+@media (max-width: 991px) {
+  .terms-text {
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
+.forgot-password {
+  color: #68a2d6;
+  font-family: Inter, sans-serif;
+  font-weight: 700;
+  margin-top: 26px;
+}
+
+@media (max-width: 991px) {
+  .forgot-password {
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+}
+
+.bold-text {
+  font-weight: 700;
+}
+
+.bold-text:hover {
+  text-decoration: underline;
+}
+
+.blue-text {
+  color: rgba(65, 118, 166, 1);
+}
+
+.blue-text:hover {
+  text-decoration: underline;
+}
