@@ -1,0 +1,215 @@
+.container {
+  position: relative;
+  width: 100%;
+  background-color: #fff;
+  display: flex;
+  padding-bottom: 80px;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media (max-width: 991px) {
+  .container {
+    flex-wrap: wrap;
+  }
+}
+.header {
+  position: fixed;
+  margin-bottom: 20px;
+  background-color: #4176a6;
+  display: flex;
+  width: 100%;
+  align-items: start;
+  gap: 20px;
+  padding: 6px 80px 12px 32px;
+}
+
+@media (max-width: 991px) {
+  .header {
+    max-width: 100%;
+    flex-wrap: wrap;
+    padding: 0 20px;
+  }
+}
+
+.banner {
+  aspect-ratio: 2.78;
+  object-fit: auto;
+  object-position: center;
+  margin-left: 40px;
+  width: 271px;
+  max-width: 100%;
+}
+
+.styled-text {
+  font-size: 24px;
+  color: white;
+  margin-left: auto;
+  display: inline-block;
+  right: 0;
+  margin-right: 50px;
+  margin-top: 35px;
+}
+
+.styled-text:hover {
+  color: blue;
+}
+
+.styled-text:visited {
+  color: purple;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+.sidebar-container {
+  position: relative;
+}
+.sidebar {
+  height: 100vh;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  transition: width 0.5s;
+  padding-top: 60px;
+  color: white;
+}
+.sidebar a {
+  margin-top: 20px;
+  padding: 10px 15px;
+  text-decoration: none;
+  font-size: 20px;
+  color: #818181;
+  display: block;
+}
+.sidebar a:first-child {
+  margin-top: 30px;
+}
+.sidebar a:hover {
+  color: #f1f1f1;
+}
+.hamburger {
+  font-size: 50px;
+  cursor: pointer;
+  position: fixed;
+  top: 20px;
+  left: 15px;
+  z-index: 2;
+}
+.sidebar-container:hover .sidebar {
+  width: 250px;
+}
+
+.main-content {
+  align-self: center;
+  display: flex;
+  margin-top: 200px;
+  width: 915px;
+  max-width: 100%;
+  flex-direction: column;
+  align-items: start;
+  font-size: 23px;
+  color: #000;
+  font-weight: 400;
+}
+
+.list {
+  margin-left: 120px;
+  display: block;
+  width: 150px;
+  height: 30px;
+  padding: 8px 12px;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  color: #333;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.list:hover,
+.list:focus {
+  border-color: #888;
+  outline: none;
+}
+
+.my-courses-heading {
+  display: flex;
+  gap: 20px;
+  font-size: 36px;
+  white-space: nowrap;
+  margin: 40px 0 0 24px;
+  margin-left: 400px;
+}
+
+@media (max-width: 991px) {
+  .my-courses-heading {
+    margin-left: 10px;
+    white-space: initial;
+  }
+}
+
+.courses-icon {
+  aspect-ratio: 1.08;
+  object-fit: auto;
+  object-position: center;
+  width: 71px;
+}
+
+.my-courses-text {
+  font-family: Inter, sans-serif;
+  flex-grow: 1;
+  flex-basis: auto;
+  margin: auto 0;
+  margin-left: 30px;
+}
+
+.course-item {
+  align-self: stretch;
+  display: flex;
+  margin-top: 15px;
+  gap: 20px;
+  padding: 0 20px;
+  margin-left: 390px;
+}
+
+@media (max-width: 991px) {
+  .course-item {
+    flex-wrap: wrap;
+  }
+}
+
+.course-icon {
+  aspect-ratio: 0.8;
+  object-fit: auto;
+  object-position: center;
+  width: 44px;
+}
+
+.course-name {
+  font-family: Inter, sans-serif;
+  flex-grow: 1;
+  flex-basis: auto;
+  margin: auto 0;
+}
+
+@media (max-width: 991px) {
+  .course-name {
+    max-width: 100%;
+  }
+}
+
+.course-link {
+  color: #285e8e;
+}
+
+.course-link:hover {
+  color: blue;
+  text-decoration: underline;
+}
