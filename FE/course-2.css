@@ -1,0 +1,263 @@
+.container {
+  position: relative;
+  width: 100%;
+  background-color: #fff;
+  display: flex;
+  padding-bottom: 80px;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media (max-width: 991px) {
+  .container {
+    flex-wrap: wrap;
+  }
+}
+.header {
+  position: fixed;
+  margin-bottom: 20px;
+  background-color: #4176a6;
+  display: flex;
+  width: 100%;
+  align-items: start;
+  gap: 20px;
+  padding: 6px 80px 12px 32px;
+}
+
+@media (max-width: 991px) {
+  .header {
+    max-width: 100%;
+    flex-wrap: wrap;
+    padding: 0 20px;
+  }
+}
+
+.banner {
+  aspect-ratio: 2.78;
+  object-fit: auto;
+  object-position: center;
+  margin-left: 40px;
+  width: 271px;
+  max-width: 100%;
+}
+
+.styled-text {
+  font-size: 24px;
+  color: white;
+  margin-left: auto;
+  display: inline-block;
+  right: 0;
+  margin-right: 50px;
+  margin-top: 35px;
+}
+
+.styled-text:hover {
+  color: blue;
+}
+
+.styled-text:visited {
+  color: purple;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+.sidebar-container {
+  position: relative;
+}
+.sidebar {
+  height: 100vh;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  transition: width 0.5s;
+  padding-top: 60px;
+  color: white;
+}
+.sidebar a {
+  margin-top: 20px;
+  padding: 10px 15px;
+  text-decoration: none;
+  font-size: 20px;
+  color: #818181;
+  display: block;
+}
+.sidebar a:first-child {
+  margin-top: 30px;
+}
+.sidebar a:hover {
+  color: #f1f1f1;
+}
+.hamburger {
+  font-size: 50px;
+  cursor: pointer;
+  position: fixed;
+  top: 20px;
+  left: 15px;
+  z-index: 2;
+}
+.sidebar-container:hover .sidebar {
+  width: 250px;
+}
+.main-content {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1193px;
+  margin-top: 74px;
+  color: #000;
+  font-weight: 400;
+}
+
+@media (max-width: 991px) {
+  .main-content {
+    margin-top: 40px;
+  }
+}
+
+.course-info {
+  align-self: start;
+  display: flex;
+  margin-left: 200px;
+  margin-top: 80px;
+  gap: 20px;
+}
+
+@media (max-width: 991px) {
+  .course-info {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 991px) {
+  .course-title {
+    padding-left: 20px;
+    flex-wrap: wrap;
+  }
+}
+
+.course-name {
+  font-family: Inter, sans-serif;
+  flex-grow: 1;
+  flex-basis: auto;
+  display: block;
+  width: 400px; 
+  padding: 8px 12px; 
+  font-size: 16px; 
+  font-family: Arial, sans-serif; 
+  color: #333; 
+  background-color: #fff; 
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+ }
+
+.course-name:hover,
+.course-name:focus {
+    border-color: #888; 
+    outline: none; 
+}
+}
+
+.course-icon {
+  width: 43px;
+  aspect-ratio: 2.04;
+  object-fit: auto;
+  object-position: center;
+  align-self: start;
+}
+
+.course-subtitle {
+  flex-grow: 1;
+  flex-basis: auto;
+  margin: auto 0;
+  font: 32px Inter, sans-serif;
+}
+
+.student-list {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  margin-top: 47px;
+  margin-left: 180px;
+  padding: 0 20px;
+  gap: 20px;
+  font-size: 20px;
+  white-space: nowrap;
+}
+
+@media (max-width: 991px) {
+  .student-list {
+    flex-wrap: wrap;
+    margin-top: 40px;
+    white-space: initial;
+  }
+}
+
+.student-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+@media (max-width: 991px) {
+  .student-item {
+    white-space: initial;
+  }
+}
+
+.student-avatar {
+  width: 205px;
+  height: 217px;
+  background-color: #d9d9d9;
+}
+
+.student-info {
+  font-family: Inter, sans-serif;
+  margin: auto 0;
+}
+
+.student-list-2 {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 75px;
+  margin-left: 180px;
+  padding: 0 20px;
+  gap: 20px;
+  font-size: 20px;
+  white-space: nowrap;
+}
+
+@media (max-width: 991px) {
+  .student-list-2 {
+    flex-wrap: wrap;
+    margin-top: 40px;
+    white-space: initial;
+  }
+}
+
+.student-list-3 {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 75px;
+  margin-left: 180px;
+  padding: 0 20px;
+  gap: 20px;
+  font-size: 20px;
+  white-space: nowrap;
+}
+
+@media (max-width: 991px) {
+  .student-list-3 {
+    flex-wrap: wrap;
+    margin-top: 40px;
+    white-space: initial;
+  }
+}
