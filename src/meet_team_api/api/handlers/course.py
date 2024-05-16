@@ -58,15 +58,29 @@ async def find_course(course_id: int) -> Optional[dict[str, int | str]]:
     """This function returns the course info given `course_id`"""
     conn = get_connection()
     cur = get_cursor(conn)
+
+    # fetch course info
     cur.execute(
         """
-        SELECT id, name, year, semester, description
-        FROM course
-        WHERE id = %s
+        WITH c AS (
+            SELECT
+                id,
+                name,
+                owner_id AS teacher_id,
+                year,
+                semester,
+                description
+            FROM course
+            WHERE id = %s
+        )
+        SELECT c.*, u.name AS teacher
+        FROM c
+        INNER JOIN
+            `user` u
+        ON u.id=c.teacher_id
         """,
         (course_id,),
     )
-
     ret: dict[str, int | str] = cur.fetchone()
 
     cur.close()

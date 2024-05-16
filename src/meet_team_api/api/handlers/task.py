@@ -67,16 +67,20 @@ async def find_one(task_id: int, user_id):
     cur.execute(
         """
         SELECT
-            id,
-            name,
-            description,
+            task.id,
+            task.name,
+            task.description,
             assignee_id,
+            u1.name AS assignee_name,
             reviewer_id,
-            create_at,
-            close_at,
-            status
+            u2.name AS reviewer_name,
+            task.create_at,
+            task.close_at,
+            task.status
         FROM task
-        WHERE id=%s
+        INNER JOIN `user` u1 ON u1.id=assignee_id
+        INNER JOIN `user` u2 ON u2.id=reviewer_id
+        WHERE task.id=%s
         """,
         (task_id,),
     )
@@ -85,6 +89,20 @@ async def find_one(task_id: int, user_id):
         task_info["create_at"] = task_info["create_at"].isoformat()
     if task_info["close_at"] is not None:
         task_info["close_at"] = task_info["close_at"].isoformat()
+    if task_info.get("assignee_id", None) is not None:
+        task_info["assignee"] = {
+            "id": task_info["assignee_id"],
+            "name": task_info["assignee_name"]
+        }
+        del task_info["assignee_id"]
+        del task_info["assignee_name"]
+    if task_info.get("reviewer_id", None) is not None:
+        task_info["reviewer"] = {
+            "id": task_info["reviewer_id"],
+            "name": task_info["reviewer_name"]
+        }
+        del task_info["reviewer_id"]
+        del task_info["reviewer_name"]
 
     cur.execute(
         """
@@ -97,6 +115,7 @@ async def find_one(task_id: int, user_id):
             c.id,
             c.creator_id,
             u.name AS username,
+            c.title,
             c.description,
             c.reference_link,
             c.create_at

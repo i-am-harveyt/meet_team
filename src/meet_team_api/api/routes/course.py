@@ -8,16 +8,35 @@ from fastapi import APIRouter, Header, HTTPException, status
 from fastapi.responses import JSONResponse
 
 from ...models.course import CourseId, CreateCourseRequest, UpdateCourseRequest
-from ..handlers import course
+from ..handlers import course, group
 
 course_router = APIRouter()
 
 
 @course_router.get("/{course_id}")
-async def find_one(course_id: int = -1):
+async def find_one(course_id: int = -1, groups: bool = False):
     """This is for finding specific course's information"""
-    data = await course.find_course(course_id)
-    return JSONResponse({"data": {"course": data}}, 200)
+    ret = {"data": None}
+    try:
+        course_info = await course.find_course(course_id)
+        ret["data"] = {"course": course_info}
+    except Exception as e:
+        raise HTTPException(
+            content={"message": "Wrong course id", "error": str(e)},
+            status_code=status.HTTP_403_FORBIDDEN,
+        ) from e
+
+    if groups:
+        try:
+            groups_info = await group.find_by_course(course_id)
+            ret["data"]["groups"] = groups_info
+        except Exception as e:
+            raise HTTPException(
+                content={"message": "Fetch Groups Failed", "error": str(e)},
+                status_code=status.HTTP_403_FORBIDDEN,
+            ) from e
+
+    return JSONResponse(ret, status_code=status.HTTP_200_OK)
 
 
 @course_router.get("/")
