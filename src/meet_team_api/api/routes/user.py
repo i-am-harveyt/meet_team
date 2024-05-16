@@ -13,18 +13,96 @@ from ..handlers import user as user_handler
 user_router = APIRouter()
 
 
+@user_router.get("/courses")
+async def fetch_course(authorization: Annotated[str | None, Header()] = None):
+    try:
+        assert isinstance(authorization, str)
+        payload = jwt.decode(
+            authorization[7:], os.getenv("MEET_TEAM_JWT"), algorithms="HS256"
+        )
+        user_id = payload["id"]
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid Bearer Token",
+        ) from e
+
+    try:
+        courses = await user_handler.fetch_course(user_id)
+        return JSONResponse(
+            {"data": {"course": courses}}, status_code=status.HTTP_201_CREATED
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e),
+        ) from e
+
+
+@user_router.get("/tasks")
+async def fetch_tasks(authorization: Annotated[str | None, Header()] = None):
+    try:
+        assert isinstance(authorization, str)
+        payload = jwt.decode(
+            authorization[7:], os.getenv("MEET_TEAM_JWT"), algorithms="HS256"
+        )
+        user_id = payload["id"]
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid Bearer Token",
+        ) from e
+    try:
+        tasks = await user_handler.fetch_tasks(user_id)
+        return JSONResponse(
+            {"data": {"tasks": tasks}}, status_code=status.HTTP_201_CREATED
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e),
+        ) from e
+
+
 @user_router.get("/{user_id}")
 async def find_one(user_id: int, authorization: Annotated[str | None, Header()] = None):
     """find user info"""
 
     is_self = False
-    if authorization is not None:
+    try:
+        assert isinstance(authorization, str)
         payload = jwt.decode(
             authorization[7:], os.getenv("MEET_TEAM_JWT"), algorithms="HS256"
         )
         is_self = payload["id"] == user_id
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid Bearer Token",
+        ) from e
 
     data = await user_handler.find_info(user_id, is_self)
+
+    return JSONResponse({"data": data}, status_code=status.HTTP_200_OK)
+
+
+@user_router.get("/")
+async def find_one(authorization: Annotated[str | None, Header()] = None):
+    """find user info"""
+
+    try:
+        assert isinstance(authorization, str)
+        payload = jwt.decode(
+            authorization[7:], os.getenv("MEET_TEAM_JWT"), algorithms="HS256"
+        )
+        user_id = payload["id"]
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid Bearer Token",
+        ) from e
+
+    data = await user_handler.find_info(user_id, True)
 
     return JSONResponse({"data": data}, status_code=status.HTTP_200_OK)
 
@@ -50,7 +128,8 @@ async def login(login_info: LoginRequest):
     )
 
     return JSONResponse(
-        {"data": {"token": encoded_jwt}}, status_code=status.HTTP_200_OK
+        {"data": {"token": encoded_jwt, "user": {"id": user_id}}},
+        status_code=status.HTTP_200_OK,
     )
 
 

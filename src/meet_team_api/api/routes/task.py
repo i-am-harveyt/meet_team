@@ -33,13 +33,13 @@ async def find_all(
             detail="Invalid Bearer Token",
         ) from e
     try:
-        data = await task.find_all(group, user_id, me)
+        tasks = await task.find_all(group, user_id, me)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You're not in this group",
         ) from e
-    return JSONResponse(content=data, status_code=200)
+    return JSONResponse(content={"data": {"tasks": tasks}}, status_code=200)
 
 
 @task_router.get("/")

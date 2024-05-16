@@ -66,7 +66,7 @@ async def info(group: int, authorization: Annotated[str | None, Header()]):
         ) from e
 
     try:
-        data = await group_handler.find_one(group)
+        data = await group_handler.find_one(group, user_id)
     except Exception as e:
         raise HTTPException(
             detail=str(e), status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -92,7 +92,9 @@ async def update(
         ) from e
 
     try:
-        group_id = await group_handler.update(user_id, req.id, req.name, req.description)
+        group_id = await group_handler.update(
+            user_id, req.id, req.name, req.description
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

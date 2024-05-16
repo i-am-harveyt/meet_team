@@ -53,7 +53,7 @@ async def find_all(user_id, group_id):
     return ret
 
 
-async def create(user_id, task_id, description, reference_link):
+async def create(user_id, task_id, title, description, reference_link):
     """This function is to create commits given `task_id`"""
     conn: MySQLConnectionAbstract = get_connection()
     cur: MySQLCursorAbstract = get_cursor(conn)
@@ -61,7 +61,7 @@ async def create(user_id, task_id, description, reference_link):
     cur.execute(
         """
         WITH task_with_group AS (
-            SELECT t.* FROM `task` t 
+            SELECT t.* FROM `task` t
             INNER JOIN `group` g ON t.group_id=g.id
             WHERE t.id=%s
         )
@@ -82,10 +82,10 @@ async def create(user_id, task_id, description, reference_link):
 
     cur.execute(
         """
-        INSERT INTO `commit` (task_id, creator_id, description, reference_link)
+        INSERT INTO `commit` (task_id, creator_id, title, description, reference_link)
         VALUES (%s, %s, %s, %s)
         """,
-        (task_id, user_id, description, reference_link),
+        (task_id, user_id, title, description, reference_link),
     )
     new_commit_id = cur.lastrowid
     cur.execute(

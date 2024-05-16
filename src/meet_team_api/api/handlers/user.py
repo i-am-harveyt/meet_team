@@ -1,6 +1,7 @@
 """This is the user handlers, for the user router"""
 
 from ...db import get_connection, get_cursor
+from ...models.user import UserId
 
 
 async def register(account: str, password: str, name: str) -> int | None:
@@ -42,18 +43,75 @@ async def login(account: str, password: str) -> int | None:
     return ret
 
 
-async def find_info(user_id: int, is_self: bool) -> dict[str, str]:
+async def find_info(user_id: UserId, is_self: bool) -> dict[str, str]:
     """This function is to fetching user info"""
     conn = get_connection()
     cur = get_cursor(conn)
-    if is_self:
-        query: str = """
-        SELECT id, account, name, description
-        FROM user WHERE id=%s
+    ret = {}
+    query: str = """
+    SELECT id, account, name, description
+    FROM user WHERE id=%s
+    """
+    cur.execute(query, (user_id,))
+    ret = cur.fetchone()
+    cur.close()
+    conn.close()
+    return ret
+
+
+async def fetch_course(user_id: UserId):
+    conn = get_connection()
+    cur = get_cursor(conn)
+    ret = []
+
+    cur.execute(
         """
-        cur.execute(query, (user_id,))
-        ret = cur.fetchone()
-        cur.close()
-        conn.close()
-        return ret
-    return {}
+        WITH joined_courses AS (
+            SELECT * FROM `course_member` cm
+            WHERE cm.user_id=%s
+        )
+        SELECT
+            c.id,
+            c.name,
+            u.name AS teacher,
+            c.year,
+            c.semester
+        FROM `course` c
+        INNER JOIN
+            `user` u
+        ON
+            c.owner_id = u.id
+        INNER JOIN joined_courses jc ON c.id=jc.course_id
+        """,
+        (user_id,),
+    )
+    ret = cur.fetchall()
+
+    cur.close()
+    conn.close()
+    return ret
+
+
+async def fetch_tasks(user_id: UserId):
+    conn = get_connection()
+    cur = get_cursor(conn)
+
+    cur.execute(
+        """
+        SELECT
+            id,
+            name,
+            description,
+            status
+        FROM
+            `task`
+        WHERE
+            assignee_id = %s
+        """,
+        (user_id,),
+    )
+    ret = cur.fetchall()
+
+    cur.close()
+    conn.close()
+    return ret

@@ -38,14 +38,45 @@ async def create(
     return new_group_id
 
 
-async def find_one(group_id: GroupId):
+async def find_by_course(course_id: CourseId):
+    conn = get_connection()
+    cursor = get_cursor(conn)
+
+    cursor.execute(
+        """
+        SELECT
+            g.id AS id,
+            g.name AS name,
+            g.description AS description,
+            u.name AS owner
+        FROM `course` c
+        INNER JOIN
+            `group` g
+        ON
+            c.id=g.course_id
+        INNER JOIN
+            `user` u
+        ON
+            g.owner_id = u.id
+        WHERE c.id=%s
+        """,
+        (course_id,),
+    )
+    groups = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+    return groups
+
+
+async def find_one(group_id: GroupId, user_id: UserId):
     """This function finds a group's information given group_id"""
     conn = get_connection()
     cur = get_cursor(conn)
 
     cur.execute(
         """
-    SELECT user.id, user.name, user.account
+    SELECT user.id, user.name, user.account, user.description
     FROM group_member gm
     INNER JOIN user ON gm.user_id=user.id
     WHERE gm.group_id=%s
@@ -58,9 +89,10 @@ async def find_one(group_id: GroupId):
         """
         SELECT
             g.id,
-            c.name AS course_name,
-            u.name AS owner_name,
-            g.name AS group_name,
+            c.name AS course,
+            g.owner_id AS ownerId,
+            u.name AS owner,
+            g.name AS name,
             g.description
         FROM `group` g
         INNER JOIN user u ON g.owner_id=u.id
@@ -72,7 +104,11 @@ async def find_one(group_id: GroupId):
     group = cur.fetchone()
     cur.close()
     conn.close()
-    return {"group": group, "members": members}
+    return {
+        "group": group,
+        "members": members,
+        "inGroup": user_id in [gm["id"] for gm in members],
+    }
 
 
 async def update(

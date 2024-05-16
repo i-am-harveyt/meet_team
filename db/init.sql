@@ -77,6 +77,7 @@ CREATE TABLE IF NOT EXISTS `commit` (
 	id INT AUTO_INCREMENT PRIMARY KEY,
 	task_id INT,
 	creator_id INT,
+	title VARCHAR(50),
 	description TEXT,
 	reference_link TEXT,
 	create_at TIMESTAMP DEFAULT NOW(),

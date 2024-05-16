@@ -6,6 +6,7 @@ class CommitCreateRequest(BaseModel):
 
     task_id: int
     reference_link: str | None = Field(default=None)
+    title: str | None = Field(default=None)
     description: str | None = Field(default=None)
 
 

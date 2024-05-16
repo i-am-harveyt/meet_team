@@ -33,7 +33,7 @@ async def create(
 
     try:
         new_commit_id = await commit.create(
-            user_id, req.task_id, req.description, req.reference_link
+            user_id, req.task_id, req.title, req.description, req.reference_link
         )
     except Exception as e:
         raise HTTPException(
