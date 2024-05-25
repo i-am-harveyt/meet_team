@@ -1,7 +1,7 @@
 """This is the router for /course"""
 
 import os
-from typing import Annotated
+from typing import Annotated, Optional
 
 import jwt
 from fastapi import APIRouter, Header, HTTPException, status
@@ -14,15 +14,31 @@ course_router = APIRouter()
 
 
 @course_router.get("/{course_id}")
-async def find_one(course_id: int = -1, groups: bool = False):
+async def find_one(
+    authorization: Annotated[str | None, Header()],
+    course_id: int = -1,
+    groups: bool = False,
+):
     """This is for finding specific course's information"""
     ret = {"data": None}
+    print(course_id)
     try:
-        course_info = await course.find_course(course_id)
+        assert isinstance(authorization, str)
+        payload = jwt.decode(
+            authorization[7:], os.getenv("MEET_TEAM_JWT"), algorithms="HS256"
+        )
+        user_id = payload["id"]
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid Bearer Token",
+        ) from e
+    try:
+        course_info = await course.find_course(course_id, user_id)
         ret["data"] = {"course": course_info}
     except Exception as e:
         raise HTTPException(
-            content={"message": "Wrong course id", "error": str(e)},
+            detail={"message": "Wrong course id", "error": str(e)},
             status_code=status.HTTP_403_FORBIDDEN,
         ) from e
 
@@ -32,7 +48,7 @@ async def find_one(course_id: int = -1, groups: bool = False):
             ret["data"]["groups"] = groups_info
         except Exception as e:
             raise HTTPException(
-                content={"message": "Fetch Groups Failed", "error": str(e)},
+                detail={"message": "Fetch Groups Failed", "error": str(e)},
                 status_code=status.HTTP_403_FORBIDDEN,
             ) from e
 
@@ -40,21 +56,33 @@ async def find_one(course_id: int = -1, groups: bool = False):
 
 
 @course_router.get("/")
-async def find_all(offset: int = 0, limit: int = 10):
+async def find_all(
+    searchTerm: Optional[str] = None, offset: int = 0, limit: int = 10
+):
     """This is the for listing the courses"""
+    courses = []
+    meta = {}
+    try:
+        courses = await course.find_all(offset, limit, searchTerm)
+        meta = {
+            "offset": offset,
+            "limit": limit,
+        }
+    except Exception as e:
+        raise HTTPException(
+            detail={"message": str(e)},
+            status_code=status.HTTP_403_FORBIDDEN,
+        ) from e
+
     return JSONResponse(
         {
-            "courses": {},
-            "meta": {
-                "offset": offset,
-                "limit": limit,
-            },
+            "data": {"courses": courses, "meta": meta},
         },
-        200,
+        status.HTTP_200_OK,
     )
 
 
-@course_router.post("/{course_id}")
+@course_router.post("/{course_id}/join")
 async def join(course_id: CourseId, authorization: Annotated[str | None, Header()]):
     """This router is for adding a user into a course"""
     try:

@@ -82,8 +82,15 @@ async def create(user_id, task_id, title, description, reference_link):
 
     cur.execute(
         """
-        INSERT INTO `commit` (task_id, creator_id, title, description, reference_link)
-        VALUES (%s, %s, %s, %s)
+        INSERT INTO
+            `commit` (
+                task_id,
+                creator_id,
+                title,
+                description,
+                reference_link
+            )
+        VALUES (%s, %s, %s, %s, %s)
         """,
         (task_id, user_id, title, description, reference_link),
     )

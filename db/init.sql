@@ -84,3 +84,15 @@ CREATE TABLE IF NOT EXISTS `commit` (
 	FOREIGN KEY(creator_id) REFERENCES `user`(id),
 	FOREIGN KEY(task_id) REFERENCES `task`(id)
 );
+
+CREATE TABLE IF NOT EXISTS `review` (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	user_id INT,
+	reviewer_id INT,
+	group_id INT,
+	content TEXT,
+	create_at TIMESTAMP DEFAULT NOW(),
+	FOREIGN KEY(user_id) REFERENCES `user`(id),
+	FOREIGN KEY(reviewer_id) REFERENCES `user`(id),
+	FOREIGN KEY(group_id) REFERENCES `group`(id)
+);

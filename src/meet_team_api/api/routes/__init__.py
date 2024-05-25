@@ -5,6 +5,7 @@ from fastapi import APIRouter
 from .commit import commit_router
 from .course import course_router
 from .group import group_router
+from .review import review_router
 from .task import task_router
 from .user import user_router
 
@@ -15,3 +16,4 @@ router.include_router(course_router, prefix="/course", tags=["Course"])
 router.include_router(commit_router, prefix="/commit", tags=["Commit"])
 router.include_router(group_router, prefix="/group", tags=["Group"])
 router.include_router(task_router, prefix="/task", tags=["Task"])
+router.include_router(review_router, prefix="/review", tags=["Review"])
