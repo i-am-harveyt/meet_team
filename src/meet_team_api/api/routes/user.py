@@ -7,7 +7,7 @@ import jwt
 from fastapi import APIRouter, Header, HTTPException, status
 from fastapi.responses import JSONResponse
 
-from ...models.user import LoginRequest, RegisterRequest
+from ...models.user import LoginRequest, RegisterRequest, UserInfoUpdate
 from ..handlers import user as user_handler
 
 user_router = APIRouter()
@@ -114,7 +114,7 @@ async def login(login_info: LoginRequest):
         user_id = (await user_handler.login(**login_info.dict()))["id"]
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Login Failed"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
         ) from e
     if user_id is None:
         raise HTTPException(
@@ -148,6 +148,26 @@ async def register(user: RegisterRequest):
         ) from e
 
 
-@user_router.patch("/user")
-async def update_info():
-    pass
+@user_router.patch("/")
+async def update_info(
+    req: UserInfoUpdate, authorization: Annotated[str | None, Header()] = None
+):
+    print(authorization)
+    try:
+        assert isinstance(authorization, str)
+        payload = jwt.decode(
+            authorization[7:], os.getenv("MEET_TEAM_JWT"), algorithms="HS256"
+        )
+        user_id = payload["id"]
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid Bearer Token",
+        ) from e
+
+    succeed = await user_handler.update_info(user_id, req.description)
+
+    return JSONResponse(
+        {"data": {"message": "Ok" if succeed else "Failed"}},
+        status_code=status.HTTP_200_OK,
+    )

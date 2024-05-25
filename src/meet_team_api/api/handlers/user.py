@@ -115,3 +115,22 @@ async def fetch_tasks(user_id: UserId):
     cur.close()
     conn.close()
     return ret
+
+
+async def update_info(user_id: UserId, description: str | None):
+    conn = get_connection()
+    cur = get_cursor(conn)
+
+    cur.execute(
+        """
+        UPDATE `user` u
+        SET description=%s
+        WHERE u.id=%s
+        """,
+        (description, user_id),
+    )
+    conn.commit()
+
+    cur.close()
+    conn.close()
+    return True

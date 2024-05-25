@@ -1,6 +1,6 @@
 """This is the module stores all user-related models"""
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from .course import ListedCourse
 
@@ -50,3 +50,7 @@ class UserInfoSelf(BaseModel):
     description: str
     courses: list[ListedCourse]
     avg_rating: float
+
+
+class UserInfoUpdate(BaseModel):
+    description: str | None = Field(default=None)

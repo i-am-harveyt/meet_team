@@ -54,7 +54,48 @@ async def create_course(
     return new_course_id
 
 
-async def find_course(course_id: int) -> Optional[dict[str, int | str]]:
+async def find_all(offset: int, limit: int, search_term: str | None = None):
+    conn = get_connection()
+    cur = get_cursor(conn)
+
+    # fetch all courses from db
+    if search_term:
+        cur.execute(
+            """
+            SELECT
+                id,
+                name,
+                year,
+                semester
+            FROM course
+            WHERE name LIKE %s
+            LIMIT %s OFFSET %s
+            """,
+            ('%' + search_term + '%', limit, offset),
+        )
+    else:
+        cur.execute(
+            """
+            SELECT
+                id,
+                name,
+                year,
+                semester
+            FROM course
+            LIMIT %s OFFSET %s
+            """,
+            (limit, offset),
+        )
+    ret = cur.fetchall()
+
+    cur.close()
+    conn.close()
+    return ret
+
+
+
+
+async def find_course(course_id: int, user_id: int) -> Optional[dict[str, int | str]]:
     """This function returns the course info given `course_id`"""
     conn = get_connection()
     cur = get_cursor(conn)
@@ -72,14 +113,19 @@ async def find_course(course_id: int) -> Optional[dict[str, int | str]]:
                 description
             FROM course
             WHERE id = %s
+        ), cm AS (
+            SELECT EXISTS(
+                select * 
+                from course_member
+                inner join c on course_id=c.id
+                where user_id = %s
+            ) as exist
         )
-        SELECT c.*, u.name AS teacher
-        FROM c
-        INNER JOIN
-            `user` u
-        ON u.id=c.teacher_id
+        SELECT c.*, u.name  AS teacher, cm.exist AS in_course
+        FROM c, cm, `user` u
+        WHERE u.id=c.teacher_id
         """,
-        (course_id,),
+        (course_id, user_id),
     )
     ret: dict[str, int | str] = cur.fetchone()
 

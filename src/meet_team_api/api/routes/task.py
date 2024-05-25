@@ -97,3 +97,27 @@ async def create(
             detail="Invalid Bearer Token",
         ) from e
     return JSONResponse(content={"task": {"id": new_id}})
+
+
+@task_router.patch("/{task_id}")
+async def update(task_id: int, authorization: Annotated[None | str, Header()] = None):
+    try:
+        assert isinstance(authorization, str)
+        payload = jwt.decode(
+            authorization[7:], os.getenv("MEET_TEAM_JWT"), algorithms="HS256"
+        )
+        user_id = payload["id"]
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid Bearer Token",
+        ) from e
+
+    try:
+        await task.patch(user_id, task_id)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=str(e),
+        ) from e
+    return JSONResponse(content={"message": "ok"}, status_code=status.HTTP_200_OK)

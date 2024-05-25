@@ -1,10 +1,10 @@
-from datetime import datetime
 from typing import Optional
 
 from mysql.connector.abstracts import (MySQLConnectionAbstract,
                                        MySQLCursorAbstract)
 
 from ...db import get_connection, get_cursor
+from ...models.user import UserId
 
 
 async def find_all(group_id: int, user_id: int, me: bool):
@@ -28,12 +28,31 @@ async def find_all(group_id: int, user_id: int, me: bool):
 
     if me:
         query = """
-        SELECT id, name, status FROM task
-        WHERE group_id = %s AND %s IN (assignedd_id, reviewer_id)
+        SELECT
+            id,
+            name,
+            task.description,
+            status
+        FROM
+            task
+        WHERE
+            group_id = %s
+            AND
+            %s IN (assignedd_id, reviewer_id)
         """
         cur.execute(query, (group_id, user_id))
     else:
-        query = "SELECT id, name, status FROM task WHERE group_id = %s"
+        query = """
+        SELECT
+            id,
+            name,
+            description,
+            status
+        FROM
+            task
+        WHERE
+            group_id = %s
+            """
         cur.execute(query, (group_id,))
     ret = cur.fetchall()
     cur.close()
@@ -78,8 +97,8 @@ async def find_one(task_id: int, user_id):
             task.close_at,
             task.status
         FROM task
-        INNER JOIN `user` u1 ON u1.id=assignee_id
-        INNER JOIN `user` u2 ON u2.id=reviewer_id
+        LEFT JOIN `user` u1 ON u1.id=assignee_id
+        LEFT JOIN `user` u2 ON u2.id=reviewer_id
         WHERE task.id=%s
         """,
         (task_id,),
@@ -92,17 +111,27 @@ async def find_one(task_id: int, user_id):
     if task_info.get("assignee_id", None) is not None:
         task_info["assignee"] = {
             "id": task_info["assignee_id"],
-            "name": task_info["assignee_name"]
+            "name": task_info["assignee_name"],
         }
         del task_info["assignee_id"]
         del task_info["assignee_name"]
+    else:
+        task_info["assignee"] = {
+            "id": None,
+            "name": None,
+        }
     if task_info.get("reviewer_id", None) is not None:
         task_info["reviewer"] = {
             "id": task_info["reviewer_id"],
-            "name": task_info["reviewer_name"]
+            "name": task_info["reviewer_name"],
         }
         del task_info["reviewer_id"]
         del task_info["reviewer_name"]
+    else:
+        task_info["reviewer"] = {
+            "id": None,
+            "name": None,
+        }
 
     cur.execute(
         """
@@ -171,3 +200,38 @@ async def create(
     cur.close()
     conn.close()
     return new_task_id
+
+
+async def patch(user_id: UserId, task_id: int):
+    conn = get_connection()
+    cur = get_cursor(conn)
+    # check if the user is in the group
+    cur.execute(
+        """
+        SELECT EXISTS(
+            SELECT *
+            FROM `group_member` gm
+            INNER JOIN `task` t
+            ON t.group_id = gm.group_id
+            WHERE user_id=%s AND t.id=%s
+        ) AS in_group;
+        """,
+        (user_id, task_id),
+    )
+    result = cur.fetchone()
+    if result["in_group"] is False:
+        cur.close()
+        conn.close()
+        raise Exception("You're not in this group")
+
+    cur.execute(
+        """
+        UPDATE `task` SET status='Done'
+        WHERE id = %s
+        """,
+        (task_id,),
+    )
+    conn.commit()
+
+    cur.close()
+    conn.close()

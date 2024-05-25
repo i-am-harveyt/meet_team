@@ -141,3 +141,22 @@ async def update(
     conn.close()
 
     return group_id
+
+
+async def join(user_id: UserId, group_id: GroupId):
+    """This function is to add a user into a group"""
+    conn = get_connection()
+    cur = get_cursor(conn)
+
+    cur.execute(
+        """
+        INSERT INTO group_member (user_id, group_id)
+        VALUES (%s, %s)
+        """,
+        (user_id, group_id),
+    )
+    conn.commit()
+
+    cur.close()
+    conn.close()
+    return True

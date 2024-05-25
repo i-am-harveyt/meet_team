@@ -21,3 +21,9 @@ class GroupUpdateRequest(BaseModel):
     id: GroupId
     name: str
     description: str | None = Field(default=None)
+
+
+class GroupJoinRequest(BaseModel):
+    """The request used for user joining a group"""
+
+    group_id: GroupId

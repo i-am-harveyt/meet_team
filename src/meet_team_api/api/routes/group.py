@@ -104,3 +104,31 @@ async def update(
     return JSONResponse(
         content={"data": {"group": {"id": group_id}}}, status_code=status.HTTP_200_OK
     )
+
+
+@group_router.post("/{group_id}/join")
+async def join(group_id: int, authorization: Annotated[str | None, Header()]):
+    try:
+        assert isinstance(authorization, str)
+        payload = jwt.decode(
+            authorization[7:], os.getenv("MEET_TEAM_JWT"), algorithms="HS256"
+        )
+        user_id = payload["id"]
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid Bearer Token",
+        ) from e
+
+    try:
+        succeed = await group_handler.join(user_id, group_id)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e),
+        ) from e
+
+    return JSONResponse(
+        content={"data": {"message": "Ok" if succeed else "Failed"}},
+        status_code=status.HTTP_200_OK if succeed else status.HTTP_403_FORBIDDEN,
+    )
