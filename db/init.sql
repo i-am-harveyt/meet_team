@@ -91,7 +91,9 @@ CREATE TABLE IF NOT EXISTS `review` (
 	reviewer_id INT,
 	group_id INT,
 	content TEXT,
+	rating FLOAT DEFAULT 0,
 	create_at TIMESTAMP DEFAULT NOW(),
+	UNIQUE(user_id, group_id, reviewer_id),
 	FOREIGN KEY(user_id) REFERENCES `user`(id),
 	FOREIGN KEY(reviewer_id) REFERENCES `user`(id),
 	FOREIGN KEY(group_id) REFERENCES `group`(id)

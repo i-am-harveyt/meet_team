@@ -15,6 +15,19 @@ user_router = APIRouter()
 
 @user_router.get("/courses")
 async def fetch_course(authorization: Annotated[str | None, Header()] = None):
+    """
+    Fetches the courses associated with a user.
+
+    Parameters:
+        authorization (str | None, Header()): The authorization header containing the bearer token.
+
+    Returns:
+        JSONResponse: A JSON response containing the fetched courses.
+
+    Raises:
+        HTTPException: If the bearer token is invalid or not provided.
+        HTTPException: If there is an internal server error while fetching the courses.
+    """
     try:
         assert isinstance(authorization, str)
         payload = jwt.decode(
@@ -41,6 +54,24 @@ async def fetch_course(authorization: Annotated[str | None, Header()] = None):
 
 @user_router.get("/tasks")
 async def fetch_tasks(authorization: Annotated[str | None, Header()] = None):
+    """
+    Fetches tasks for a user.
+
+    Args:
+        authorization (str | None, optional): The bearer token for authentication. Defaults to None.
+
+    Raises:
+        HTTPException: If the bearer token is invalid or not provided.
+        HTTPException: If there is an internal server error while fetching the tasks.
+
+    Returns:
+        JSONResponse: A JSON response containing the fetched tasks.
+
+    Status Codes:
+        - 201 Created: If the tasks are successfully fetched.
+        - 403 Forbidden: If the bearer token is invalid.
+        - 500 Internal Server Error: If there is an internal server error.
+    """
     try:
         assert isinstance(authorization, str)
         payload = jwt.decode(
@@ -66,7 +97,20 @@ async def fetch_tasks(authorization: Annotated[str | None, Header()] = None):
 
 @user_router.get("/{user_id}")
 async def find_one(user_id: int, authorization: Annotated[str | None, Header()] = None):
-    """find user info"""
+    """
+    Retrieves information about a user with the given user ID.
+
+    Parameters:
+        user_id (int): The ID of the user to retrieve information for.
+        authorization (Annotated[str | None, Header()], optional): The authorization token for the request. Defaults to None.
+
+    Returns:
+        JSONResponse: A JSON response containing the user information. The response has a status code of 200 if the request is successful.
+
+    Raises:
+        HTTPException: If the authorization token is invalid or missing. The exception has a status code of 403.
+
+    """
 
     is_self = False
     try:
@@ -87,8 +131,20 @@ async def find_one(user_id: int, authorization: Annotated[str | None, Header()] 
 
 
 @user_router.get("/")
-async def find_one(authorization: Annotated[str | None, Header()] = None):
-    """find user info"""
+async def find_self(authorization: Annotated[str | None, Header()] = None):
+    """
+    Retrieves information about the authenticated user.
+
+    Parameters:
+        authorization (Annotated[str | None, Header()], optional): The authorization token for the request. Defaults to None.
+
+    Returns:
+        JSONResponse: A JSON response containing the user information. The response has a status code of 200 if the request is successful.
+
+    Raises:
+        HTTPException: If the authorization token is invalid or missing. The exception has a status code of 403.
+
+    """
 
     try:
         assert isinstance(authorization, str)
@@ -109,7 +165,23 @@ async def find_one(authorization: Annotated[str | None, Header()] = None):
 
 @user_router.post("/login")
 async def login(login_info: LoginRequest):
-    """register routing"""
+    """
+    Endpoint for user login.
+
+    This route handles the login process for users. It expects a JSON payload containing the user's login information.
+    The payload should be of the `LoginRequest` model.
+
+    Parameters:
+        - login_info (LoginRequest): The login information of the user.
+
+    Returns:
+        - JSONResponse: A JSON response containing the encoded JWT token and the user's ID.
+
+    Raises:
+        - HTTPException: If there is an error during the login process. The exception has a status code of 500.
+        - HTTPException: If the login information is invalid. The exception has a status code of 400.
+
+    """
     try:
         user_id = (await user_handler.login(**login_info.dict()))["id"]
     except Exception as e:
@@ -135,7 +207,24 @@ async def login(login_info: LoginRequest):
 
 @user_router.post("/register")
 async def register(user: RegisterRequest):
-    """register routing"""
+    """
+    Register a new user.
+
+    This route handles the POST request to '/register' and registers a new user.
+    It expects a JSON payload containing the user information.
+
+    Parameters:
+        user (RegisterRequest): The user information to be registered.
+
+    Returns:
+        JSONResponse: A JSON response with the registered user's ID if the registration is successful.
+            The response has a status code of 201 (HTTP_201_CREATED).
+
+    Raises:
+        HTTPException: If there is an error during the registration process.
+            The status code of the exception is 500 (HTTP_500_INTERNAL_SERVER_ERROR)
+            and the detail of the exception contains the error message.
+    """
     try:
         user_id = await user_handler.register(**user.dict())
         return JSONResponse(
@@ -152,6 +241,21 @@ async def register(user: RegisterRequest):
 async def update_info(
     req: UserInfoUpdate, authorization: Annotated[str | None, Header()] = None
 ):
+    """
+    Updates the information of a user.
+
+    Parameters:
+        - req (UserInfoUpdate): The request object containing the updated user information.
+        - authorization (Annotated[str | None, Header()], optional): The authorization header. Defaults to None.
+
+    Returns:
+        JSONResponse: A JSON response indicating the success or failure of the update.
+            The response has a status code of 200 (HTTP_200_OK) and a message indicating the result of the update.
+
+    Raises:
+        HTTPException: If the authorization header is invalid or missing.
+            The status code of the exception is 403 (HTTP_403_FORBIDDEN) and the detail of the exception is "Invalid Bearer Token".
+    """
     print(authorization)
     try:
         assert isinstance(authorization, str)
