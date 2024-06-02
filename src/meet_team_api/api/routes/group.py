@@ -10,6 +10,8 @@ from fastapi.responses import JSONResponse
 
 from ...models.group import GroupCreateRequest, GroupUpdateRequest
 from ..handlers import group as group_handler
+from ..utils.get_userid import get_user_id
+from ..handlers import review as review_handler
 
 group_router = APIRouter()
 
@@ -132,3 +134,24 @@ async def join(group_id: int, authorization: Annotated[str | None, Header()]):
         content={"data": {"message": "Ok" if succeed else "Failed"}},
         status_code=status.HTTP_200_OK if succeed else status.HTTP_403_FORBIDDEN,
     )
+
+
+@group_router.get("/{group_id}/review")
+async def get_group_members_and_reviews(
+    group_id: int, authorization: Annotated[str, Header(name="Authorization")]
+):
+    """
+    Get the group members and their reviews.
+
+    Parameters:
+        - group_id (int): The ID of the group.
+        - token (str): The JWT token for authentication.
+
+    Returns:
+        - dict: The response containing the group members and their reviews.
+
+    Raises:
+        - HTTPException: If the group does not exist or the token is invalid or cannot be decoded.
+    """
+    user_id = get_user_id(authorization)
+    return review_handler.get_group_members_and_reviews(group_id, user_id)
