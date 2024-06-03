@@ -3,10 +3,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .api.routes import router
+#from .api.routes import router
+from .api.routes import router, routes_message
 
 app = FastAPI()
 app.include_router(router)
+app.include_router(routes_message.message_router)
 
 origins = ["http://localhost",
            "http://localhost:5173", "http://localhost:8000"]
