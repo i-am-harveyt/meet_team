@@ -18,10 +18,10 @@ message_router = APIRouter() # 建FastAPI router
 @message_router.post("/message") # 設POST router,當訪問此router時會調用create()
 async def create(
 
-    req: MessageCreateRequest, authorization: Annotated[str | None, Header()] 
-):
-      #req: MessageCreateRequest, authorization: Annotated[str | None, Header()]= None
+    #req: MessageCreateRequest, authorization: Annotated[str | None, Header()] 
 #):
+      req: MessageCreateRequest, authorization: Annotated[str | None, Header()]= None
+):
     try: # 創建新的message
         new_message_id = await handler_message.create( # 調用 message.create
             req.task_id, req.creator_id, req.description,
