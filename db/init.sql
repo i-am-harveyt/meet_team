@@ -98,3 +98,13 @@ CREATE TABLE IF NOT EXISTS `review` (
 	FOREIGN KEY(reviewer_id) REFERENCES `user`(id),
 	FOREIGN KEY(group_id) REFERENCES `group`(id)
 );
+
+CREATE TABLE IF NOT EXISTS `message` (
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	task_id INT,
+	creator_id INT,
+	description TEXT,
+	create_at TIMESTAMP DEFAULT NOW(),
+	FOREIGN KEY(creator_id) REFERENCES `user`(id),
+	FOREIGN KEY(task_id) REFERENCES `task`(id)
+);
