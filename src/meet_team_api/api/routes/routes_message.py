@@ -14,7 +14,7 @@ from ..handlers import handler_message
 
 message_router = APIRouter() # 建FastAPI router
 
-@message_router.post("/message") # 設POST router,當訪問此router時會調用create()
+@message_router.post("/") # 設POST router,當訪問此router時會調用create()
 async def create(
 
     
