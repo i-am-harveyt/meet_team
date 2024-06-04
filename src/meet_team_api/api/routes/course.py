@@ -55,7 +55,7 @@ async def find_one(
     return JSONResponse(ret, status_code=status.HTTP_200_OK)
 
 
-@course_router.get("/")
+@course_router.get("")
 async def find_all(
     searchTerm: Optional[str] = None, offset: int = 0, limit: int = 10
 ):

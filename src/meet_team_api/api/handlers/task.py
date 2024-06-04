@@ -19,33 +19,24 @@ async def find_all(group_id: int, user_id: int, me: bool):
 
     if me:
         query = """
-        SELECT
-            id,
-            name,
-            task.description,
-            status
-        FROM
-            task
-        WHERE
-            group_id = %s
-            AND
-            %s IN (assignedd_id, reviewer_id)
+        SELECT id, name, task.description, status, create_at, close_at
+        FROM task
+        WHERE group_id = %s AND %s IN (assignedd_id, reviewer_id)
         """
         cur.execute(query, (group_id, user_id))
     else:
         query = """
-        SELECT
-            id,
-            name,
-            description,
-            status
-        FROM
-            task
-        WHERE
-            group_id = %s
-            """
+        SELECT id, name, description, status, create_at, close_at
+        FROM task
+        WHERE group_id = %s
+        """
         cur.execute(query, (group_id,))
     ret = cur.fetchall()
+    for row in ret:
+        if row["create_at"] is not None:
+            row["create_at"] = row["create_at"].strftime("%Y-%m-%d %H:%M:%S")
+        if row["close_at"] is not None:
+            row["close_at"] = row["close_at"].strftime("%Y-%m-%d %H:%M:%S")
     cur.close()
     conn.close()
     return ret
