@@ -1,30 +1,21 @@
 from typing import Optional
 
-from mysql.connector.abstracts import (MySQLConnectionAbstract,
-                                       MySQLCursorAbstract)
+from mysql.connector.abstracts import MySQLConnectionAbstract, MySQLCursorAbstract
 
 from ...db import get_connection, get_cursor
 from ...models.user import UserId
+from ..utils.user_in_group import user_in_group
 
 
 async def find_all(group_id: int, user_id: int, me: bool):
     conn = get_connection()
     cur = get_cursor(conn)
 
-    # check if the user is in the group
-    cur.execute(
-        """
-        SELECT EXISTS(
-            SELECT * FROM group_member
-            WHERE user_id = %s AND group_id = %s
-        ) AS in_group
-        """,
-        (user_id, group_id),
-    )
-    if cur.fetchone()["in_group"] is False:
-        cur.close()
-        conn.close()
-        raise Exception("You're not in this group")
+    try:
+        user_in_group(user_id, group_id)
+    except Exception as e:
+        raise e
+
 
     if me:
         query = """

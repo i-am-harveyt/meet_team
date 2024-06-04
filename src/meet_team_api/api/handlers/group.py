@@ -160,3 +160,29 @@ async def join(user_id: UserId, group_id: GroupId):
     cur.close()
     conn.close()
     return True
+
+
+async def find_members_by_name_pattern(group_id: GroupId, name_pattern: str):
+    """This function finds group members by name pattern"""
+    conn = get_connection()
+    cur = get_cursor(conn)
+
+    cur.execute(
+        """
+        SELECT id, name
+        FROM user
+        WHERE id IN (
+            SELECT user_id
+            FROM group_member
+            WHERE group_id = %s
+        )
+        AND name LIKE %s
+        """,
+        (group_id, f"%{name_pattern}%"),
+    )
+    members = cur.fetchall()
+
+    cur.close()
+    conn.close()
+    return members
+

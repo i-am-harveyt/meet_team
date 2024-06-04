@@ -56,6 +56,22 @@ def get_group_members_and_reviews(group_id: int, user_id: int) -> list:
     conn = get_connection()
     cursor = get_cursor(conn)
 
+
+    # check if user is in the group
+    cursor.execute(
+        """
+        SELECT EXISTS(
+            SELECT * FROM group_member
+            WHERE user_id = %s AND group_id = %s
+        ) AS in_group
+        """,
+        (user_id, group_id),
+    )
+    if cursor.fetchone()["in_group"] == 0:
+        cursor.close()
+        conn.close()
+        raise Exception("You're not in this group")
+
     # fetch members
     cursor.execute(
         """

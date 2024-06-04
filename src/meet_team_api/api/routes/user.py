@@ -1,10 +1,10 @@
 """This is the router for /user"""
 
 import os
-from typing import Annotated
+from typing import Annotated, Optional
 
 import jwt
-from fastapi import APIRouter, Header, HTTPException, status
+from fastapi import APIRouter, Header, HTTPException, status, Query
 from fastapi.responses import JSONResponse
 
 from ...models.user import LoginRequest, RegisterRequest, UserInfoUpdate
@@ -14,7 +14,9 @@ user_router = APIRouter()
 
 
 @user_router.get("/courses")
-async def fetch_course(authorization: Annotated[str | None, Header()] = None):
+async def fetch_course(
+    user_id: Optional[int] = Query(default=None),
+    authorization: Annotated[str | None, Header()] = None):
     """
     Fetches the courses associated with a user.
 
@@ -33,17 +35,19 @@ async def fetch_course(authorization: Annotated[str | None, Header()] = None):
         payload = jwt.decode(
             authorization[7:], os.getenv("MEET_TEAM_JWT"), algorithms="HS256"
         )
-        user_id = payload["id"]
+        if user_id is None:
+            user_id = payload["id"]
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Invalid Bearer Token",
         ) from e
 
+
     try:
         courses = await user_handler.fetch_course(user_id)
         return JSONResponse(
-            {"data": {"course": courses}}, status_code=status.HTTP_201_CREATED
+            {"data": {"courses": courses}}, status_code=status.HTTP_200_OK
         )
     except Exception as e:
         raise HTTPException(
