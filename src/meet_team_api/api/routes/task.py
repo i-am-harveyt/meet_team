@@ -10,6 +10,8 @@ from typing_extensions import Annotated
 
 from ...api.handlers import task
 from ...models.task import TaskCreateModel
+from ..utils.user_in_group import user_in_group
+from ..utils.get_userid import get_user_id
 
 task_router = APIRouter()
 
@@ -21,23 +23,14 @@ async def find_all(
     authorization: Annotated[None | str, Header()] = None,
 ):
     """This function find all tasks given group_id and the if `self` or not"""
-    try:
-        assert isinstance(authorization, str)
-        payload = jwt.decode(
-            authorization[7:], os.getenv("MEET_TEAM_JWT"), algorithms="HS256"
-        )
-        user_id = payload["id"]
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Invalid Bearer Token",
-        ) from e
+    user_id = get_user_id(authorization)
+    user_in_group(user_id, group)
     try:
         tasks = await task.find_all(group, user_id, me)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="You're not in this group",
+            detail=str(e),
         ) from e
     return JSONResponse(content={"data": {"tasks": tasks}}, status_code=200)
 

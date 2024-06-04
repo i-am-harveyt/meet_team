@@ -1,16 +1,17 @@
 """This is the router for /group"""
 
 import os
-from typing import Annotated
+from typing import Annotated, Optional
 
 import jwt
-from fastapi import APIRouter, Header, status
+from fastapi import APIRouter, Header, Query, status
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 
 from ...models.group import GroupCreateRequest, GroupUpdateRequest
 from ..handlers import group as group_handler
 from ..utils.get_userid import get_user_id
+from ..utils.user_in_group import user_in_group
 from ..handlers import review as review_handler
 
 group_router = APIRouter()
@@ -40,7 +41,7 @@ async def create(
     except Exception as e:
         raise HTTPException(
             detail=str(e), status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
+        ) from e
     return JSONResponse(
         content={
             "group": {
@@ -154,4 +155,52 @@ async def get_group_members_and_reviews(
         - HTTPException: If the group does not exist or the token is invalid or cannot be decoded.
     """
     user_id = get_user_id(authorization)
-    return review_handler.get_group_members_and_reviews(group_id, user_id)
+    try:
+        return review_handler.get_group_members_and_reviews(group_id, user_id)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e),
+        ) from e
+
+
+@group_router.get("/{group_id}/members")
+async def find_members_by_name_pattern(
+    group_id: int,
+    name: Optional[str] = Query(default=None),
+    authorization: Annotated[str, Header(name="authorization")] = None
+):
+    """
+    Find the members whose name match the given pattern.
+
+    Parameters:
+        - group_id (int): The ID of the group.
+        - name_pattern (str): The pattern to match the name.
+        - token (str): The JWT token for authentication.
+
+    Returns:
+        - dict: The response containing the members' information.
+
+    Raises:
+        - HTTPException: If the group does not exist or the token is invalid or cannot be decoded.
+    """
+    try:
+        user_in_group(user_id=get_user_id(authorization), group_id=group_id)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=str(e),
+        ) from e
+    try:
+        members = await group_handler.find_members_by_name_pattern(
+            group_id, name
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e),
+        ) from e
+
+    return JSONResponse(
+        content={"data": {"members": members}}, status_code=status.HTTP_200_OK
+    )
