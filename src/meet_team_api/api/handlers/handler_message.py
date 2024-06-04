@@ -6,7 +6,7 @@ from mysql.connector.abstracts import (MySQLConnectionAbstract,
 from mysql.connector.types import RowItemType
 
 from ...db import get_connection, get_cursor
-#from db import get_connection, get_cursor
+
 async def find_all(creator_id,task_id):
     conn: MySQLConnectionAbstract = get_connection()
     cur: MySQLCursorAbstract = get_cursor(conn)

@@ -3,7 +3,7 @@
 import os
 from typing import Annotated 
 
-#import jwt
+import jwt
 from fastapi import APIRouter, Header, status
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
@@ -11,15 +11,13 @@ from fastapi.responses import JSONResponse
 
 from ...models.models_message import MessageCreateRequest
 from ..handlers import handler_message
-# from models_message import MessageCreateRequest
-# import handler_message
+
 message_router = APIRouter() # 建FastAPI router
 
 @message_router.post("/message") # 設POST router,當訪問此router時會調用create()
 async def create(
 
-    #req: MessageCreateRequest, authorization: Annotated[str | None, Header()] 
-#):
+    
       req: MessageCreateRequest, authorization: Annotated[str | None, Header()]= None
 ):
     try: # 創建新的message
